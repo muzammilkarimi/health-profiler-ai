@@ -212,35 +212,96 @@ function App() {
           <div className="result-column">
             {result ? (
               <div className="result-container animate-fade-in">
+                {/* Status-specific Header/Main Result */}
                 {result.status === 'ok' ? (
-                  <>
-                    <div className="card result-card">
-                      <h3>Health Analysis (Raw JSON)</h3>
-                      <div className="result-content">
-                        <pre>
-                          {JSON.stringify({
-                            risk_level: result.risk_level,
-                            factors: result.factors,
-                            recommendations: result.recommendations,
-                            status: result.status
-                          }, null, 2)}
-                        </pre>
-                      </div>
+                  <div className="card result-card">
+                    <h3>Health Analysis (Raw JSON)</h3>
+                    <div className="result-content">
+                      <pre>
+                        {JSON.stringify({
+                          risk_level: result.risk_level,
+                          factors: result.factors,
+                          recommendations: result.recommendations,
+                          status: result.status
+                        }, null, 2)}
+                      </pre>
                     </div>
-
-                    {result.developer_info && (
-                      <div className="card dev-card animate-fade-in">
-                        <h3>Developer Results (Raw JSON)</h3>
-                        <div className="result-content">
-                          <pre>{JSON.stringify(result.developer_info, null, 2)}</pre>
-                        </div>
-                      </div>
-                    )}
-                  </>
+                  </div>
+                ) : result.status === 'incomplete_profile' ? (
+                  <div className="card warning-card">
+                    <div className="warning-header">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                        <path d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                      </svg>
+                      <h3>Incomplete Profile</h3>
+                    </div>
+                    <p>{result.reason || "More information is needed for a reliable analysis."}</p>
+                    <div className="result-content">
+                      <pre>
+                        {JSON.stringify({
+                          status: result.status,
+                          reason: result.reason,
+                          risk_level: result.risk_level
+                        }, null, 2)}
+                      </pre>
+                    </div>
+                  </div>
                 ) : (
                   <div className="card error-card">
                     <h3>Analysis Failed</h3>
                     <pre>{JSON.stringify(result, null, 2)}</pre>
+                  </div>
+                )}
+
+                {/* Developer Results - Always show if available */}
+                {result.developer_info && (
+                  <div className="card dev-card animate-fade-in">
+                    <div className="dev-header">
+                      <h3>Developer Results (Raw JSON)</h3>
+                      <button
+                        className="raw-toggle-btn"
+                        onClick={() => console.log('Raw Result:', result)}
+                        title="Check Console for Full Object"
+                      >
+                        Log to Console
+                      </button>
+                    </div>
+
+                    <div className="result-content">
+                      <div className="dev-step">
+                        <h4>Step 1 - Information Extraction</h4>
+                        <pre>{JSON.stringify(result.developer_info.step1_extraction, null, 2)}</pre>
+                        {result.developer_info.guardrail && (
+                          <div className="guardrail-status">
+                            <strong>Guardrail / Exit Condition:</strong>
+                            <pre>{JSON.stringify(result.developer_info.guardrail, null, 2)}</pre>
+                          </div>
+                        )}
+                      </div>
+
+                      <div className="dev-step">
+                        <h4>Step 2 - Factor Extraction</h4>
+                        <pre>{JSON.stringify(result.developer_info.step2_factor_extraction, null, 2)}</pre>
+                      </div>
+
+                      <div className="dev-step">
+                        <h4>Step 3 - Risk Classification</h4>
+                        <pre>{JSON.stringify(result.developer_info.step3_risk_classification, null, 2)}</pre>
+                      </div>
+
+                      <div className="dev-footer">
+                        <span className="dev-badge">Mode: {result.developer_info.input_mode}</span>
+                      </div>
+
+                      {result.developer_info.ocr_text && (
+                        <div className="dev-section">
+                          <h4>Raw OCR Text</h4>
+                          <div className="raw-text-box">
+                            {result.developer_info.ocr_text}
+                          </div>
+                        </div>
+                      )}
+                    </div>
                   </div>
                 )}
               </div>

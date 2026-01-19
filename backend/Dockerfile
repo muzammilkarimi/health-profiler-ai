@@ -1,15 +1,21 @@
-FROM python:3.10-slim
+FROM node:20-slim
 
 WORKDIR /app
 
+# Install system dependencies for Tesseract OCR
 RUN apt-get update && apt-get install -y \
     tesseract-ocr \
     libtesseract-dev \
     && rm -rf /var/lib/apt/lists/*
 
-COPY requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt
+# Install app dependencies
+COPY package*.json ./
+RUN npm install
 
+# Copy source code
 COPY . .
 
-CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]
+EXPOSE 8000
+
+# Start the server
+CMD ["node", "index.js"]

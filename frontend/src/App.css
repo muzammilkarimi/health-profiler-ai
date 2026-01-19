@@ -425,3 +425,88 @@ select:focus {
   border-left: 4px solid #ff4d4d;
   text-align: left;
 }
+
+.dev-step {
+  margin-bottom: 2rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  padding-bottom: 1.5rem;
+}
+
+.dev-step:last-child {
+  border-bottom: none;
+  margin-bottom: 0;
+  padding-bottom: 0;
+}
+
+.dev-step h4 {
+  color: #ffca28;
+  font-size: 0.9rem;
+  margin-top: 0;
+  margin-bottom: 1rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.guardrail-status {
+  margin-top: 1rem;
+  padding: 1rem;
+  background: rgba(255, 77, 77, 0.1);
+  border-radius: 8px;
+  border: 1px solid rgba(255, 77, 77, 0.2);
+}
+
+.guardrail-status strong {
+  display: block;
+  color: #ff4d4d;
+  font-size: 0.8rem;
+  margin-bottom: 0.5rem;
+}
+
+.guardrail-status pre {
+  color: #ff8080;
+}
+
+.warning-card {
+  border-left: 4px solid #ffa500;
+  text-align: left;
+}
+
+.warning-header {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.warning-header svg {
+  width: 24px;
+  height: 24px;
+  color: #ffa500;
+}
+
+.warning-header h3 {
+  margin: 0;
+  color: #ffa500;
+}
+
+.warning-card p {
+  color: #ccc;
+  font-size: 0.95rem;
+  margin-bottom: 1.5rem;
+}
+
+.raw-toggle-btn {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: #888;
+  padding: 0.4rem 0.8rem;
+  border-radius: 6px;
+  font-size: 0.7rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.raw-toggle-btn:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: #ccc;
+}
