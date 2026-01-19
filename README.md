@@ -2,9 +2,13 @@
 
 An intelligent, full-stack application that analyzes medical reports and lifestyle data using OCR and Generative AI to provide health risk insights and personalized recommendations. Built for speed, accuracy, and developer transparency.
 
-## 🚀 Features
+## � Live Demo
+- **Web UI**: [http://15.207.110.144](http://15.207.110.144)
+- **API Endpoint**: `http://15.207.110.144:8000/api/analyze`
 
-- **Multimodal AI Analysis**: Combines raw OCR text and direct image analysis using **Google Gemini 1.5 Flash** for high-accuracy extraction.
+## �🚀 Features
+
+- **Multimodal AI Analysis**: Combines raw OCR text and direct image analysis using the **gemini-flash-latest** model for high-accuracy extraction.
 - **Unified Logic Pipeline**: A single round-trip API call processes multiple logical steps:
   1. **Information Extraction**: Age, smoker status, exercise, and diet.
   2. **Smart Guardrails**: Automatically detects incomplete profiles to prevent unreliable risk scoring.
@@ -25,11 +29,11 @@ An intelligent, full-stack application that analyzes medical reports and lifesty
 
 ## 🏗️ Architecture
 
-The app uses a **Unified Analyzer** pattern. Instead of chaining multiple LLM calls which increases latency and cost, it uses a complex structured prompt to force Gemini to return a multi-step JSON object. 
+The app uses a **Unified Analyzer** pattern. Instead of chaining multiple LLM calls which increases latency and cost, it uses a complex structured prompt to force the **gemini-flash-latest** model (rather than the 1.5 variant) to return a multi-step JSON object. 
 
 1. **Client**: React frontend sends `multipart/form-data` to the backend.
 2. **Backend**: Express handles the request, uses `multer` for image processing, and `Tesseract` for initial OCR context.
-3. **AI Layer**: A single prompt containing the OCR text and/or the image is sent to Gemini 1.5 Flash.
+3. **AI Layer**: A single prompt containing the OCR text and/or the image is sent to the `gemini-flash-latest` model.
 4. **Validation**: The backend parses the structured JSON response and applies final guardrail logic before returning it to the user.
 
 ## 📋 Prerequisites
@@ -94,22 +98,43 @@ curl -X POST http://localhost:8000/api/analyze \
 
 #### 2. Image Report Analysis
 ```bash
-curl -X POST http://localhost:8000/api/analyze \
-  -F "name=Jane Doe" \
-  -F "image=@/path/to/your/blood_report.jpg"
+curl -X POST http://15.207.110.144:8000/api/analyze \
+  -F "image=@test.png"
 ```
 
 ### 📦 Example Response
 ```json
 {
   "status": "ok",
-  "risk_level": "moderate",
-  "factors": ["Smoking", "Inactivity", "High Sugar Intake"],
-  "recommendations": ["Reduce sugar intake", "Consult a cardiologist"],
+  "risk_level": "low",
+  "factors": [
+    "Non-smoker status (positive health factor)",
+    "Low baseline age risk (Age 25)",
+    "Adherence to a specific, restrictive diet (Keto diet)"
+  ],
+  "recommendations": [
+    "Determine and record exercise frequency to complete the health profile.",
+    "Monitor lipid profile (cholesterol) due to the high-fat composition of the Keto diet.",
+    "Ensure adequate intake of fiber and micronutrients while following the dietary plan."
+  ],
   "developer_info": {
-    "step1_extraction": { "age": 45, "smoker": true, ... },
-    "step2_factor_extraction": { ... },
-    "step3_risk_classification": { "score": 65, ... }
+    "step1_extraction": {
+      "answers": { "age": 25, "smoker": false, "exercise": null, "diet": "Keto diet" },
+      "missing_fields": ["exercise"],
+      "confidence": 1
+    },
+    "step2_factor_extraction": {
+      "factors": [...],
+      "confidence": 1
+    },
+    "step3_risk_classification": {
+      "risk_level": "low",
+      "score": 20,
+      "rationale": [...]
+    },
+    "guardrail": { "status": "ok", "reason": null },
+    "ocr_text": "...",
+    "input_mode": "image/ocr"
   }
 }
 ```
@@ -120,7 +145,7 @@ To deploy this on an AWS EC2 instance (Ubuntu):
 
 ```bash
 # 1. Update and install Docker
-sudo apt update && sudo apt install docker.io docker-compose -y
+sudo apt update && install docker.io docker-compose -y
 sudo usermod -aG docker $USER && newgrp docker
 
 # 2. Clone and Setup
